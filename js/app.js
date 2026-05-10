@@ -17,7 +17,7 @@ import {
   gasSgToMw, mwToGasSg,
   pseudoCriticals, zFromConditions, gasDensityLbFt3,
 } from './gas.js';
-import { getPrefs, setPrefs, resetPrefs, formatNumber, applyTheme } from './preferences.js';
+import { getPrefs, setPrefs, resetPrefs, formatNumber } from './preferences.js';
 
 const $  = sel => document.querySelector(sel);
 const $$ = sel => Array.from(document.querySelectorAll(sel));
@@ -34,13 +34,43 @@ function parseNum(el) {
 // ---------- Tabs ----------
 
 function initTabs() {
-  $$('.tab-btn').forEach(btn => {
+  $$('.mb-tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      $$('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+      $$('.mb-tab-btn').forEach(b => b.classList.toggle('is-active', b === btn));
       const target = btn.dataset.tab;
-      $$('.tab-panel').forEach(p => p.classList.toggle('active', p.id === target));
+      $$('.mb-panel').forEach(p => p.classList.toggle('is-active', p.id === target));
+      // Re-trigger reveal animations for the freshly visible cards.
+      const panel = document.getElementById(target);
+      if (panel) panel.querySelectorAll('.mb-reveal').forEach(el => el.classList.add('is-visible'));
     });
   });
+}
+
+// ---------- Reveal animations + scroll progress ----------
+
+function initReveal() {
+  const obs = new IntersectionObserver(entries => {
+    for (const e of entries) {
+      if (e.isIntersecting) {
+        e.target.classList.add('is-visible');
+        obs.unobserve(e.target);
+      }
+    }
+  }, { threshold: 0.1 });
+  $$('.mb-reveal').forEach(el => obs.observe(el));
+}
+
+function initScrollProgress() {
+  const bar = $('#mb-progress');
+  if (!bar) return;
+  const update = () => {
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    const pct = max > 0 ? (h.scrollTop / max) * 100 : 0;
+    bar.style.width = pct + '%';
+  };
+  document.addEventListener('scroll', update, { passive: true });
+  update();
 }
 
 // ---------- Unit converter ----------
@@ -58,7 +88,6 @@ function initUnitConverter() {
     cat.appendChild(opt);
   });
 
-  // Field-default starting units per category
   const FIELD_DEFAULTS = {
     volume: ['bbl', 'm3'],
     pressure: ['psi', 'kPa'],
@@ -197,7 +226,6 @@ function initDrilling() {
 // ---------- Production ----------
 
 function initProduction() {
-  // API <-> SG
   const apiV = $('#api-value');
   const sgV  = $('#api-sg');
   apiV.addEventListener('input', () => {
@@ -211,7 +239,6 @@ function initProduction() {
   apiV.value = '30';
   sgV.value = fmt(apiToSg(30));
 
-  // GOR
   const gorScf = $('#gor-scfstb');
   const gorSm  = $('#gor-sm3');
   gorScf.addEventListener('input', () => {
@@ -223,7 +250,6 @@ function initProduction() {
     gorScf.value = Number.isNaN(v) ? '' : fmt(gorSm3Sm3ToScfStb(v));
   });
 
-  // Standing's Bo
   function recomputeBo() {
     const rs = parseNum($('#bo-rs'));
     const gg = parseNum($('#bo-gasSg'));
@@ -234,7 +260,6 @@ function initProduction() {
   }
   ['#bo-rs', '#bo-gasSg', '#bo-oilSg', '#bo-temp'].forEach(s => $(s).addEventListener('input', recomputeBo));
 
-  // Bg
   function recomputeBg() {
     const z = parseNum($('#bg-z'));
     const tF = parseNum($('#bg-temp'));
@@ -249,7 +274,6 @@ function initProduction() {
 // ---------- Gas ----------
 
 function initGas() {
-  // Volume conversion
   const fromV = $('#gv-from-value');
   const fromU = $('#gv-from-unit');
   const toU   = $('#gv-to-unit');
@@ -271,7 +295,6 @@ function initGas() {
   fromV.value = '1000';
   recomputeGv();
 
-  // Gas SG <-> MW
   $('#gsg-sg').addEventListener('input', () => {
     const v = parseNum($('#gsg-sg'));
     $('#gsg-mw').value = Number.isNaN(v) ? '' : fmt(gasSgToMw(v));
@@ -281,7 +304,6 @@ function initGas() {
     $('#gsg-sg').value = Number.isNaN(v) ? '' : fmt(mwToGasSg(v));
   });
 
-  // Z-factor (Brill-Beggs) from gas SG, T(°F), P(psia)
   function recomputeZ() {
     const sg = parseNum($('#zf-sg'));
     const tF = parseNum($('#zf-temp'));
@@ -298,7 +320,6 @@ function initGas() {
   }
   ['#zf-sg', '#zf-temp', '#zf-press'].forEach(s => $(s).addEventListener('input', recomputeZ));
 
-  // Gas density
   function recomputeRho() {
     const sg = parseNum($('#gd-sg'));
     const tF = parseNum($('#gd-temp'));
@@ -322,34 +343,27 @@ function initSettings() {
   const prefs = getPrefs();
   $('#pref-system').value = prefs.unitSystem;
   $('#pref-sigfigs').value = String(prefs.sigFigs);
-  $('#pref-theme').value = prefs.theme;
 
   $('#pref-system').addEventListener('change', e => {
     setPrefs({ unitSystem: e.target.value });
   });
   $('#pref-sigfigs').addEventListener('change', e => {
     setPrefs({ sigFigs: parseInt(e.target.value, 10) });
-    // Re-format visible values by re-firing input events on every numeric field
     $$('input[type="number"]').forEach(i => i.dispatchEvent(new Event('input', { bubbles: true })));
-  });
-  $('#pref-theme').addEventListener('change', e => {
-    setPrefs({ theme: e.target.value });
-    applyTheme(e.target.value);
   });
   $('#pref-reset').addEventListener('click', () => {
     const p = resetPrefs();
     $('#pref-system').value = p.unitSystem;
     $('#pref-sigfigs').value = String(p.sigFigs);
-    $('#pref-theme').value = p.theme;
-    applyTheme(p.theme);
   });
 }
 
 // ---------- Boot ----------
 
 document.addEventListener('DOMContentLoaded', () => {
-  applyTheme();
   initTabs();
+  initReveal();
+  initScrollProgress();
   initUnitConverter();
   initDrilling();
   initProduction();

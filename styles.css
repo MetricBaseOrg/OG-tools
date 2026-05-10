@@ -933,6 +933,11 @@ ins.adsbygoogle { display: block; }
   width: 100%;
 }
 
+#mb-body {
+  min-width: 0;
+  width: 100%;
+}
+
 .mb-rail {
   width: 160px;
   flex-shrink: 0;
@@ -944,5 +949,5 @@ ins.adsbygoogle { display: block; }
 
 @media (min-width: 1280px) {
   .mb-rail { display: block; }
-  #mb-body { flex: 1; min-width: 0; }
+  #mb-body { flex: 1; }
 }

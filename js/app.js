@@ -30,6 +30,56 @@ const parseNum = el => {
   return Number.isFinite(n) ? n : NaN;
 };
 
+// ─── Tabs ──────────────────────────────────────────────────────────────
+
+const TAB_IDS = ['units', 'drilling', 'production', 'gas', 'settings'];
+
+function activateTab(id, opts = {}) {
+  if (!TAB_IDS.includes(id)) return;
+  $$('.tab-btn').forEach(b => b.classList.toggle('is-active', b.dataset.tab === id));
+  $$('.calc-section.panel').forEach(p => p.classList.toggle('is-active', p.id === id));
+  // Re-trigger reveal animations on the freshly visible panel.
+  document.getElementById(id)?.querySelectorAll('.reveal')
+    .forEach(el => el.classList.add('visible'));
+  if (opts.updateHash !== false && location.hash !== '#' + id) {
+    history.replaceState(null, '', '#' + id);
+  }
+  if (opts.scroll) {
+    // Defer so any drawer-close handler runs first (it clears body.overflow:hidden).
+    requestAnimationFrame(() => {
+      const tabs = $('#mb-tabs');
+      const navH = $('#mb-nav')?.offsetHeight ?? 58;
+      if (!tabs) return;
+      const target = tabs.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: target - navH + 1, behavior: 'smooth' });
+    });
+  }
+}
+
+function initTabs() {
+  $$('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => activateTab(btn.dataset.tab));
+  });
+  // Hero pills + nav anchors + drawer anchors that point to a tab id should
+  // activate that tab (and not just rely on hash scrolling).
+  $$('a[href^="#"]').forEach(a => {
+    const id = a.getAttribute('href').slice(1);
+    if (!TAB_IDS.includes(id)) return;
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      activateTab(id, { scroll: true });
+    });
+  });
+  // Initial activation from URL hash.
+  const initial = location.hash.slice(1);
+  if (TAB_IDS.includes(initial)) activateTab(initial, { updateHash: false });
+  // Browser back/forward.
+  window.addEventListener('hashchange', () => {
+    const id = location.hash.slice(1);
+    if (TAB_IDS.includes(id)) activateTab(id, { updateHash: false });
+  });
+}
+
 // ─── Chrome (drawer + scroll + reveals + footer accordion) ─────────────
 
 function initChrome() {
@@ -386,6 +436,7 @@ function initSettings() {
 // ─── Boot ──────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
+  initTabs();
   initChrome();
   initUnitConverter();
   initDrilling();

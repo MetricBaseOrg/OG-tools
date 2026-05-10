@@ -100,8 +100,21 @@
       </div>
     </div>
 
+    <!-- ─── TAB BAR ─────────────────────────────────────── -->
+    <div id="mb-tabs" role="tablist" aria-label="Calculator categories">
+      <div class="mb-container">
+        <div class="mb-tabs-inner">
+          <button class="tab-btn is-active" data-tab="units"      role="tab" type="button"><span class="tab-num">01</span>Convert</button>
+          <button class="tab-btn"           data-tab="drilling"   role="tab" type="button"><span class="tab-num">02</span>Drilling</button>
+          <button class="tab-btn"           data-tab="production" role="tab" type="button"><span class="tab-num">03</span>Production</button>
+          <button class="tab-btn"           data-tab="gas"        role="tab" type="button"><span class="tab-num">04</span>Gas</button>
+          <button class="tab-btn"           data-tab="settings"   role="tab" type="button"><span class="tab-num">05</span>Preferences</button>
+        </div>
+      </div>
+    </div>
+
     <!-- ============== UNITS ============== -->
-    <section id="units" class="calc-section">
+    <section id="units" class="calc-section panel is-active">
       <div class="mb-container">
         <span class="section-label reveal">01 — Convert</span>
         <h2 class="reveal reveal-delay-1">Oilfield unit converter.</h2>
@@ -141,7 +154,7 @@
     </section>
 
     <!-- ============== DRILLING ============== -->
-    <section id="drilling" class="calc-section alt">
+    <section id="drilling" class="calc-section panel">
       <div class="mb-container">
         <span class="section-label reveal">02 — Drilling</span>
         <h2 class="reveal reveal-delay-1">Mud, hydrostatics, capacity.</h2>
@@ -261,7 +274,7 @@
     </section>
 
     <!-- ============== PRODUCTION ============== -->
-    <section id="production" class="calc-section">
+    <section id="production" class="calc-section panel">
       <div class="mb-container">
         <span class="section-label reveal">03 — Production</span>
         <h2 class="reveal reveal-delay-1">Reservoir &amp; production fluids.</h2>
@@ -352,7 +365,7 @@
     </section>
 
     <!-- ============== GAS ============== -->
-    <section id="gas" class="calc-section alt">
+    <section id="gas" class="calc-section panel">
       <div class="mb-container">
         <span class="section-label reveal">04 — Gas</span>
         <h2 class="reveal reveal-delay-1">Standard gas math.</h2>
@@ -445,7 +458,7 @@
     </section>
 
     <!-- ============== SETTINGS ============== -->
-    <section id="settings" class="calc-section">
+    <section id="settings" class="calc-section panel">
       <div class="mb-container">
         <span class="section-label reveal">05 — Preferences</span>
         <h2 class="reveal reveal-delay-1">Tune the defaults.</h2>

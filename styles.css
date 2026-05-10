@@ -927,27 +927,23 @@ h2 {
 ins.adsbygoogle { display: block; }
 
 /* ─── SIDE RAIL AD LAYOUT ────────────────────────────── */
-#mb-layout {
-  display: flex;
-  align-items: flex-start;
-  width: 100%;
-}
-
-#mb-body {
-  min-width: 0;
-  width: 100%;
-}
-
-.mb-rail {
-  width: 160px;
-  flex-shrink: 0;
-  position: sticky;
-  top: 72px;
-  padding: 24px 8px 0;
-  display: none;
-}
+.mb-rail { display: none; }
 
 @media (min-width: 1280px) {
-  .mb-rail { display: block; }
-  #mb-body { flex: 1; }
+  #mb-layout {
+    display: flex;
+    align-items: flex-start;
+  }
+  #mb-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .mb-rail {
+    display: block;
+    width: 160px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 72px;
+    padding: 24px 8px 0;
+  }
 }

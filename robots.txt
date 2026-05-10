@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://og.metricbase.org/sitemap.xml

@@ -93,12 +93,18 @@ approx(rho > 0 && rho < 20 ? 1 : 0, 1, 1e-9, 'gas density positive & finite');
 
 const root = document.getElementById('results');
 const summary = document.getElementById('summary');
-summary.textContent = `${passed} passed, ${failed} failed (${results.length} total)`;
-summary.className = failed === 0 ? 'pass' : 'fail';
+summary.textContent = `${passed} passed · ${failed} failed · ${results.length} total`;
+summary.className = `mb-summary ${failed === 0 ? 'is-pass' : 'is-fail'}`;
 
 for (const r of results) {
   const li = document.createElement('li');
-  li.className = r.ok ? 'pass' : 'fail';
-  li.textContent = `${r.ok ? '✓' : '✗'} ${r.label}  — got ${r.actual}, expected ${r.expected}`;
+  li.className = r.ok ? 'is-pass' : 'is-fail';
+  const tag = document.createElement('span');
+  tag.className = 'mb-tag';
+  tag.textContent = r.ok ? 'PASS' : 'FAIL';
+  const body = document.createElement('span');
+  body.textContent = `${r.label}  — got ${r.actual}, expected ${r.expected}`;
+  li.appendChild(tag);
+  li.appendChild(body);
   root.appendChild(li);
 }

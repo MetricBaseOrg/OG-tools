@@ -26,7 +26,8 @@ const $$ = sel => Array.from(document.querySelectorAll(sel));
 
 const fmt = v => formatNumber(v, getPrefs().sigFigs);
 const parseNum = el => {
-  const n = parseFloat(el.value);
+  if (!el.value) return NaN;
+  const n = parseFloat(el.value.replace(/,/g, ''));
   return Number.isFinite(n) ? n : NaN;
 };
 
@@ -424,7 +425,7 @@ function initSettings() {
   $('#pref-sigfigs').addEventListener('change', e => {
     setPrefs({ sigFigs: parseInt(e.target.value, 10) });
     // Refresh visible values by re-firing input events on every numeric field.
-    $$('input[type="number"]').forEach(i => i.dispatchEvent(new Event('input', { bubbles: true })));
+    $$('input[type="text"]').forEach(i => i.dispatchEvent(new Event('input', { bubbles: true })));
   });
   $('#pref-reset').addEventListener('click', () => {
     const p = resetPrefs();

@@ -47,7 +47,12 @@ export function formatNumber(value, sigFigs = read().sigFigs) {
   if (abs !== 0 && (abs < 1e-4 || abs >= 1e7)) {
     return value.toExponential(Math.max(0, sigFigs - 1));
   }
-  const s = value.toPrecision(sigFigs);
-  if (s.indexOf('.') === -1) return s;
-  return s.replace(/\.?0+$/, '');
+  let s = value.toPrecision(sigFigs);
+  if (s.includes('e')) return s;
+  if (s.indexOf('.') !== -1) {
+    s = s.replace(/\.?0+$/, '');
+  }
+  const parts = s.split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.join('.');
 }

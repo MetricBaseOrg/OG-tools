@@ -179,14 +179,14 @@
               <div class="field">
                 <label class="field-label" for="uc-from-value">From</label>
                 <div class="field-group">
-                  <input class="input" id="uc-from-value" type="number" step="any" inputmode="decimal" />
+                  <input class="input" id="uc-from-value" type="text" step="any" inputmode="decimal" />
                   <select class="select" id="uc-from-unit"></select>
                 </div>
               </div>
               <div class="field">
                 <label class="field-label" for="uc-to-value">To</label>
                 <div class="field-group">
-                  <input class="input" id="uc-to-value" type="number" step="any" inputmode="decimal" />
+                  <input class="input" id="uc-to-value" type="text" step="any" inputmode="decimal" />
                   <select class="select" id="uc-to-unit"></select>
                 </div>
               </div>
@@ -214,14 +214,14 @@
               <div class="field">
                 <label class="field-label" for="mw-from-value">From</label>
                 <div class="field-group">
-                  <input class="input" id="mw-from-value" type="number" step="any" inputmode="decimal" />
+                  <input class="input" id="mw-from-value" type="text" step="any" inputmode="decimal" />
                   <select class="select" id="mw-from-unit"></select>
                 </div>
               </div>
               <div class="field">
                 <label class="field-label" for="mw-to-value">To</label>
                 <div class="field-group">
-                  <input class="input" id="mw-to-value" type="number" step="any" inputmode="decimal" readonly />
+                  <input class="input" id="mw-to-value" type="text" step="any" inputmode="decimal" readonly />
                   <select class="select" id="mw-to-unit"></select>
                 </div>
               </div>
@@ -242,11 +242,11 @@
             <div class="field-row cols-2">
               <div class="field">
                 <label class="field-label" for="hp-mw">Mud weight</label>
-                <input class="input" id="hp-mw" type="number" step="any" inputmode="decimal" placeholder="12" />
+                <input class="input" id="hp-mw" type="text" step="any" inputmode="decimal" placeholder="12" />
               </div>
               <div class="field">
                 <label class="field-label" for="hp-tvd">TVD</label>
-                <input class="input" id="hp-tvd" type="number" step="any" inputmode="decimal" placeholder="10000" />
+                <input class="input" id="hp-tvd" type="text" step="any" inputmode="decimal" placeholder="10000" />
               </div>
             </div>
             <p class="result"><span class="result-label">P =</span><span class="result-value" id="hp-result"></span></p>
@@ -259,11 +259,11 @@
             <div class="field-row cols-2">
               <div class="field">
                 <label class="field-label" for="pv-id">Pipe ID (in)</label>
-                <input class="input" id="pv-id" type="number" step="any" inputmode="decimal" />
+                <input class="input" id="pv-id" type="text" step="any" inputmode="decimal" />
               </div>
               <div class="field">
                 <label class="field-label" for="pv-len">Length (ft)</label>
-                <input class="input" id="pv-len" type="number" step="any" inputmode="decimal" />
+                <input class="input" id="pv-len" type="text" step="any" inputmode="decimal" />
               </div>
             </div>
             <p class="result"><span class="result-label">Capacity</span><span class="result-value" id="pv-cap"></span></p>
@@ -277,15 +277,15 @@
             <div class="field-row cols-3">
               <div class="field">
                 <label class="field-label" for="av-dh">Hole (in)</label>
-                <input class="input" id="av-dh" type="number" step="any" inputmode="decimal" />
+                <input class="input" id="av-dh" type="text" step="any" inputmode="decimal" />
               </div>
               <div class="field">
                 <label class="field-label" for="av-dp">Pipe OD (in)</label>
-                <input class="input" id="av-dp" type="number" step="any" inputmode="decimal" />
+                <input class="input" id="av-dp" type="text" step="any" inputmode="decimal" />
               </div>
               <div class="field">
                 <label class="field-label" for="av-len">Length (ft)</label>
-                <input class="input" id="av-len" type="number" step="any" inputmode="decimal" />
+                <input class="input" id="av-len" type="text" step="any" inputmode="decimal" />
               </div>
             </div>
             <p class="result"><span class="result-label">Capacity</span><span class="result-value" id="av-cap"></span></p>
@@ -299,15 +299,15 @@
             <div class="field-row cols-3">
               <div class="field">
                 <label class="field-label" for="ecd-mw">MW (ppg)</label>
-                <input class="input" id="ecd-mw" type="number" step="any" inputmode="decimal" />
+                <input class="input" id="ecd-mw" type="text" step="any" inputmode="decimal" />
               </div>
               <div class="field">
                 <label class="field-label" for="ecd-apl">APL (psi)</label>
-                <input class="input" id="ecd-apl" type="number" step="any" inputmode="decimal" />
+                <input class="input" id="ecd-apl" type="text" step="any" inputmode="decimal" />
               </div>
               <div class="field">
                 <label class="field-label" for="ecd-tvd">TVD (ft)</label>
-                <input class="input" id="ecd-tvd" type="number" step="any" inputmode="decimal" />
+                <input class="input" id="ecd-tvd" type="text" step="any" inputmode="decimal" />
               </div>
             </div>
             <p class="result"><span class="result-label">ECD</span><span class="result-value" id="ecd-result"></span></p>
@@ -333,11 +333,11 @@
             <div class="field-row cols-2">
               <div class="field">
                 <label class="field-label" for="api-value">°API</label>
-                <input class="input" id="api-value" type="number" step="any" inputmode="decimal" />
+                <input class="input" id="api-value" type="text" step="any" inputmode="decimal" />
               </div>
               <div class="field">
                 <label class="field-label" for="api-sg">SG (water = 1)</label>
-                <input class="input" id="api-sg" type="number" step="any" inputmode="decimal" />
+                <input class="input" id="api-sg" type="text" step="any" inputmode="decimal" />
               </div>
             </div>
             <p class="hint">SG = 141.5 / (131.5 + °API)</p>
@@ -349,11 +349,11 @@
             <div class="field-row cols-2">
               <div class="field">
                 <label class="field-label" for="gor-scfstb">scf / STB</label>
-                <input class="input" id="gor-scfstb" type="number" step="any" inputmode="decimal" />
+                <input class="input" id="gor-scfstb" type="text" step="any" inputmode="decimal" />
               </div>
               <div class="field">
                 <label class="field-label" for="gor-sm3">Sm³ / Sm³</label>
-                <input class="input" id="gor-sm3" type="number" step="any" inputmode="decimal" />
+                <input class="input" id="gor-sm3" type="text" step="any" inputmode="decimal" />
               </div>
             </div>
             <p class="hint">1 scf/STB ≈ 0.1781 Sm³/Sm³</p>
@@ -365,19 +365,19 @@
             <div class="field-row cols-2">
               <div class="field">
                 <label class="field-label" for="bo-rs">Rs (scf/STB)</label>
-                <input class="input" id="bo-rs" type="number" step="any" inputmode="decimal" placeholder="500" />
+                <input class="input" id="bo-rs" type="text" step="any" inputmode="decimal" placeholder="500" />
               </div>
               <div class="field">
                 <label class="field-label" for="bo-gasSg">Gas SG (air=1)</label>
-                <input class="input" id="bo-gasSg" type="number" step="any" inputmode="decimal" placeholder="0.65" />
+                <input class="input" id="bo-gasSg" type="text" step="any" inputmode="decimal" placeholder="0.65" />
               </div>
               <div class="field">
                 <label class="field-label" for="bo-oilSg">Oil SG</label>
-                <input class="input" id="bo-oilSg" type="number" step="any" inputmode="decimal" placeholder="0.85" />
+                <input class="input" id="bo-oilSg" type="text" step="any" inputmode="decimal" placeholder="0.85" />
               </div>
               <div class="field">
                 <label class="field-label" for="bo-temp">T (°F)</label>
-                <input class="input" id="bo-temp" type="number" step="any" inputmode="decimal" placeholder="180" />
+                <input class="input" id="bo-temp" type="text" step="any" inputmode="decimal" placeholder="180" />
               </div>
             </div>
             <p class="result"><span class="result-label">Bo</span><span class="result-value" id="bo-result"></span></p>
@@ -390,15 +390,15 @@
             <div class="field-row cols-3">
               <div class="field">
                 <label class="field-label" for="bg-z">Z</label>
-                <input class="input" id="bg-z" type="number" step="any" inputmode="decimal" placeholder="0.9" />
+                <input class="input" id="bg-z" type="text" step="any" inputmode="decimal" placeholder="0.9" />
               </div>
               <div class="field">
                 <label class="field-label" for="bg-temp">T (°F)</label>
-                <input class="input" id="bg-temp" type="number" step="any" inputmode="decimal" />
+                <input class="input" id="bg-temp" type="text" step="any" inputmode="decimal" />
               </div>
               <div class="field">
                 <label class="field-label" for="bg-press">P (psia)</label>
-                <input class="input" id="bg-press" type="number" step="any" inputmode="decimal" />
+                <input class="input" id="bg-press" type="text" step="any" inputmode="decimal" />
               </div>
             </div>
             <p class="result"><span class="result-label">Bg</span><span class="result-value" id="bg-result"></span></p>
@@ -425,14 +425,14 @@
               <div class="field">
                 <label class="field-label" for="gv-from-value">From</label>
                 <div class="field-group">
-                  <input class="input" id="gv-from-value" type="number" step="any" inputmode="decimal" />
+                  <input class="input" id="gv-from-value" type="text" step="any" inputmode="decimal" />
                   <select class="select" id="gv-from-unit"></select>
                 </div>
               </div>
               <div class="field">
                 <label class="field-label" for="gv-to-value">To</label>
                 <div class="field-group">
-                  <input class="input" id="gv-to-value" type="number" step="any" inputmode="decimal" readonly />
+                  <input class="input" id="gv-to-value" type="text" step="any" inputmode="decimal" readonly />
                   <select class="select" id="gv-to-unit"></select>
                 </div>
               </div>
@@ -446,11 +446,11 @@
             <div class="field-row cols-2">
               <div class="field">
                 <label class="field-label" for="gsg-sg">Gas SG</label>
-                <input class="input" id="gsg-sg" type="number" step="any" inputmode="decimal" />
+                <input class="input" id="gsg-sg" type="text" step="any" inputmode="decimal" />
               </div>
               <div class="field">
                 <label class="field-label" for="gsg-mw">MW (lb/lbmol)</label>
-                <input class="input" id="gsg-mw" type="number" step="any" inputmode="decimal" />
+                <input class="input" id="gsg-mw" type="text" step="any" inputmode="decimal" />
               </div>
             </div>
             <p class="hint">MW = 28.9647 × γg</p>
@@ -462,15 +462,15 @@
             <div class="field-row cols-3">
               <div class="field">
                 <label class="field-label" for="zf-sg">Gas SG</label>
-                <input class="input" id="zf-sg" type="number" step="any" inputmode="decimal" placeholder="0.65" />
+                <input class="input" id="zf-sg" type="text" step="any" inputmode="decimal" placeholder="0.65" />
               </div>
               <div class="field">
                 <label class="field-label" for="zf-temp">T (°F)</label>
-                <input class="input" id="zf-temp" type="number" step="any" inputmode="decimal" placeholder="150" />
+                <input class="input" id="zf-temp" type="text" step="any" inputmode="decimal" placeholder="150" />
               </div>
               <div class="field">
                 <label class="field-label" for="zf-press">P (psia)</label>
-                <input class="input" id="zf-press" type="number" step="any" inputmode="decimal" placeholder="2000" />
+                <input class="input" id="zf-press" type="text" step="any" inputmode="decimal" placeholder="2000" />
               </div>
             </div>
             <p class="result"><span class="result-label">Z</span><span class="result-value" id="zf-result"></span></p>
@@ -483,15 +483,15 @@
             <div class="field-row cols-3">
               <div class="field">
                 <label class="field-label" for="gd-sg">Gas SG</label>
-                <input class="input" id="gd-sg" type="number" step="any" inputmode="decimal" placeholder="0.65" />
+                <input class="input" id="gd-sg" type="text" step="any" inputmode="decimal" placeholder="0.65" />
               </div>
               <div class="field">
                 <label class="field-label" for="gd-temp">T (°F)</label>
-                <input class="input" id="gd-temp" type="number" step="any" inputmode="decimal" />
+                <input class="input" id="gd-temp" type="text" step="any" inputmode="decimal" />
               </div>
               <div class="field">
                 <label class="field-label" for="gd-press">P (psia)</label>
-                <input class="input" id="gd-press" type="number" step="any" inputmode="decimal" />
+                <input class="input" id="gd-press" type="text" step="any" inputmode="decimal" />
               </div>
             </div>
             <p class="result"><span class="result-label">ρ</span><span class="result-value" id="gd-result"></span></p>

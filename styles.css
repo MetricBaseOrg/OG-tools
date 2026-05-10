@@ -23,7 +23,7 @@
   --mono:   ui-monospace, SFMono-Regular, Menlo, Consolas, 'Roboto Mono', monospace;
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: clip; }
 
 body {
   font-family: var(--sans);

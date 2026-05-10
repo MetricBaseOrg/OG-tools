@@ -432,6 +432,64 @@ h2 {
 .calc-section { background: var(--black); }
 .calc-section.alt { background: var(--dark); }
 
+/* Tab bar — sticky below nav */
+#mb-tabs {
+  position: sticky;
+  top: 58px;
+  z-index: 90;
+  background: rgba(10, 10, 10, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.mb-tabs-inner {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.mb-tabs-inner::-webkit-scrollbar { display: none; }
+
+.tab-btn {
+  flex: 0 0 auto;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--subtle);
+  padding: 16px 18px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: color 0.18s, border-color 0.18s;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab-btn:hover { color: var(--light); }
+
+.tab-btn.is-active {
+  color: var(--white);
+  border-bottom-color: var(--gold);
+}
+
+.tab-btn:focus-visible { outline: 1px solid var(--gold); outline-offset: -1px; }
+
+.tab-btn .tab-num {
+  color: var(--gold);
+  margin-right: 8px;
+  font-weight: 700;
+}
+
+/* Panels — only the active one shows */
+.calc-section.panel { display: none; }
+.calc-section.panel.is-active { display: block; }
+
 /* Hairline grid: 1px gap, border background shows through */
 .calc-grid {
   display: grid;
@@ -814,6 +872,9 @@ h2 {
 
   #portal-hero { padding: 64px 0 56px; }
   .hero-pills { gap: 8px; }
+
+  .tab-btn { padding: 14px 14px; font-size: 10px; letter-spacing: 0.14em; }
+  .tab-btn .tab-num { margin-right: 6px; }
 
   .calc-card { padding: 26px 20px; }
 

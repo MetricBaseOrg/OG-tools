@@ -1,4 +1,6 @@
 // UI wiring. Connects forms to calculation modules and applies preferences.
+// Layout: anchor-scroll landing page (no tabs). Adds drawer, scroll progress,
+// reveal animations, back-to-top, and mobile footer accordion.
 
 import { convert, listCategories, listUnits } from './converters.js';
 import {
@@ -22,58 +24,86 @@ import { getPrefs, setPrefs, resetPrefs, formatNumber } from './preferences.js';
 const $  = sel => document.querySelector(sel);
 const $$ = sel => Array.from(document.querySelectorAll(sel));
 
-function fmt(value) {
-  return formatNumber(value, getPrefs().sigFigs);
-}
-
-function parseNum(el) {
+const fmt = v => formatNumber(v, getPrefs().sigFigs);
+const parseNum = el => {
   const n = parseFloat(el.value);
   return Number.isFinite(n) ? n : NaN;
-}
+};
 
-// ---------- Tabs ----------
+// ─── Chrome (drawer + scroll + reveals + footer accordion) ─────────────
 
-function initTabs() {
-  $$('.mb-tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      $$('.mb-tab-btn').forEach(b => b.classList.toggle('is-active', b === btn));
-      const target = btn.dataset.tab;
-      $$('.mb-panel').forEach(p => p.classList.toggle('is-active', p.id === target));
-      // Re-trigger reveal animations for the freshly visible cards.
-      const panel = document.getElementById(target);
-      if (panel) panel.querySelectorAll('.mb-reveal').forEach(el => el.classList.add('is-visible'));
-    });
+function initChrome() {
+  const drawer = $('#mb-drawer');
+  const overlay = $('#mb-drawer-overlay');
+  const burger = $('#mb-hamburger-btn');
+  const closeBtn = $('.mb-drawer-close');
+
+  function openDrawer() {
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+    burger.classList.add('active');
+    burger.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    burger.classList.remove('active');
+    burger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+  burger.addEventListener('click', () => {
+    drawer.classList.contains('open') ? closeDrawer() : openDrawer();
   });
-}
+  overlay.addEventListener('click', closeDrawer);
+  closeBtn.addEventListener('click', closeDrawer);
+  // Close drawer when an in-page anchor is followed.
+  $$('#mb-drawer a[href^="#"]').forEach(a => a.addEventListener('click', closeDrawer));
 
-// ---------- Reveal animations + scroll progress ----------
+  // Scroll progress + back-to-top
+  const progress = $('#mb-progress');
+  const backTop = $('#mb-back-top');
+  const onScroll = () => {
+    const doc = document.documentElement;
+    const scrolled = doc.scrollTop || document.body.scrollTop;
+    const total = doc.scrollHeight - doc.clientHeight;
+    if (progress) progress.style.width = (total > 0 ? (scrolled / total) * 100 : 0) + '%';
+    if (backTop) backTop.classList.toggle('visible', scrolled > 400);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  if (backTop) backTop.addEventListener('click', e => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
-function initReveal() {
+  // Reveal on scroll (hero already visible immediately).
+  $$('#portal-hero .reveal').forEach(el => el.classList.add('visible'));
   const obs = new IntersectionObserver(entries => {
     for (const e of entries) {
       if (e.isIntersecting) {
-        e.target.classList.add('is-visible');
+        e.target.classList.add('visible');
         obs.unobserve(e.target);
       }
     }
   }, { threshold: 0.1 });
-  $$('.mb-reveal').forEach(el => obs.observe(el));
+  $$('.reveal').forEach(el => {
+    if (!el.classList.contains('visible')) obs.observe(el);
+  });
+
+  // Footer accordion (mobile only).
+  $$('.mb-footer-col-head[data-toggle]').forEach(head => {
+    head.addEventListener('click', () => {
+      if (window.innerWidth > 640) return;
+      const ul = head.nextElementSibling;
+      const isOpen = head.classList.contains('open');
+      head.classList.toggle('open', !isOpen);
+      if (ul) ul.classList.toggle('open', !isOpen);
+    });
+  });
 }
 
-function initScrollProgress() {
-  const bar = $('#mb-progress');
-  if (!bar) return;
-  const update = () => {
-    const h = document.documentElement;
-    const max = h.scrollHeight - h.clientHeight;
-    const pct = max > 0 ? (h.scrollTop / max) * 100 : 0;
-    bar.style.width = pct + '%';
-  };
-  document.addEventListener('scroll', update, { passive: true });
-  update();
-}
-
-// ---------- Unit converter ----------
+// ─── Unit converter ────────────────────────────────────────────────────
 
 function initUnitConverter() {
   const cat   = $('#uc-category');
@@ -143,10 +173,9 @@ function initUnitConverter() {
   refillUnits();
 }
 
-// ---------- Drilling ----------
+// ─── Drilling ──────────────────────────────────────────────────────────
 
 function initDrilling() {
-  // Mud weight
   const mwFromV = $('#mw-from-value');
   const mwFromU = $('#mw-from-unit');
   const mwToU   = $('#mw-to-unit');
@@ -171,31 +200,29 @@ function initDrilling() {
   mwFromV.value = '8.3454';
   recomputeMud();
 
-  // Hydrostatic pressure
   function recomputeHydro() {
     const mw = parseNum($('#hp-mw'));
     const tvd = parseNum($('#hp-tvd'));
     const sys = $('#hp-system').value;
-    if (Number.isNaN(mw) || Number.isNaN(tvd)) { $('#hp-result').textContent = ''; return; }
-    if (sys === 'field') {
-      $('#hp-result').textContent = `${fmt(hydrostaticPsi(mw, tvd))} psi`;
-    } else {
-      $('#hp-result').textContent = `${fmt(hydrostaticKpa(mw, tvd))} kPa`;
-    }
+    const out = $('#hp-result');
+    if (Number.isNaN(mw) || Number.isNaN(tvd)) { out.textContent = ''; return; }
+    out.textContent = sys === 'field'
+      ? `${fmt(hydrostaticPsi(mw, tvd))} psi`
+      : `${fmt(hydrostaticKpa(mw, tvd))} kPa`;
   }
   ['#hp-mw', '#hp-tvd', '#hp-system'].forEach(s => $(s).addEventListener('input', recomputeHydro));
   $('#hp-system').addEventListener('change', recomputeHydro);
 
-  // Pipe / annular volume
   function recomputePipe() {
     const id = parseNum($('#pv-id'));
     const len = parseNum($('#pv-len'));
     if (!Number.isNaN(id)) {
       $('#pv-cap').textContent = `${fmt(pipeCapacityBblFt(id))} bbl/ft`;
-      if (!Number.isNaN(len)) {
-        $('#pv-vol').textContent = `${fmt(pipeVolumeBbl(id, len))} bbl`;
-      } else $('#pv-vol').textContent = '';
-    } else { $('#pv-cap').textContent = ''; $('#pv-vol').textContent = ''; }
+      $('#pv-vol').textContent = !Number.isNaN(len) ? `${fmt(pipeVolumeBbl(id, len))} bbl` : '';
+    } else {
+      $('#pv-cap').textContent = '';
+      $('#pv-vol').textContent = '';
+    }
   }
   ['#pv-id', '#pv-len'].forEach(s => $(s).addEventListener('input', recomputePipe));
 
@@ -205,25 +232,26 @@ function initDrilling() {
     const len = parseNum($('#av-len'));
     if (!Number.isNaN(dh) && !Number.isNaN(dp)) {
       $('#av-cap').textContent = `${fmt(annularCapacityBblFt(dh, dp))} bbl/ft`;
-      if (!Number.isNaN(len)) {
-        $('#av-vol').textContent = `${fmt(annularVolumeBbl(dh, dp, len))} bbl`;
-      } else $('#av-vol').textContent = '';
-    } else { $('#av-cap').textContent = ''; $('#av-vol').textContent = ''; }
+      $('#av-vol').textContent = !Number.isNaN(len) ? `${fmt(annularVolumeBbl(dh, dp, len))} bbl` : '';
+    } else {
+      $('#av-cap').textContent = '';
+      $('#av-vol').textContent = '';
+    }
   }
   ['#av-dh', '#av-dp', '#av-len'].forEach(s => $(s).addEventListener('input', recomputeAnn));
 
-  // ECD
   function recomputeEcd() {
     const mw = parseNum($('#ecd-mw'));
     const apl = parseNum($('#ecd-apl'));
     const tvd = parseNum($('#ecd-tvd'));
-    if ([mw, apl, tvd].some(Number.isNaN)) { $('#ecd-result').textContent = ''; return; }
-    $('#ecd-result').textContent = `${fmt(ecdPpg(mw, apl, tvd))} ppg`;
+    const out = $('#ecd-result');
+    if ([mw, apl, tvd].some(Number.isNaN)) { out.textContent = ''; return; }
+    out.textContent = `${fmt(ecdPpg(mw, apl, tvd))} ppg`;
   }
   ['#ecd-mw', '#ecd-apl', '#ecd-tvd'].forEach(s => $(s).addEventListener('input', recomputeEcd));
 }
 
-// ---------- Production ----------
+// ─── Production ────────────────────────────────────────────────────────
 
 function initProduction() {
   const apiV = $('#api-value');
@@ -255,8 +283,9 @@ function initProduction() {
     const gg = parseNum($('#bo-gasSg'));
     const go = parseNum($('#bo-oilSg'));
     const tF = parseNum($('#bo-temp'));
-    if ([rs, gg, go, tF].some(Number.isNaN) || go <= 0) { $('#bo-result').textContent = ''; return; }
-    $('#bo-result').textContent = `Bo = ${fmt(oilFvfStanding(rs, gg, go, tF))} rb/STB`;
+    const out = $('#bo-result');
+    if ([rs, gg, go, tF].some(Number.isNaN) || go <= 0) { out.textContent = ''; return; }
+    out.textContent = `${fmt(oilFvfStanding(rs, gg, go, tF))} rb/STB`;
   }
   ['#bo-rs', '#bo-gasSg', '#bo-oilSg', '#bo-temp'].forEach(s => $(s).addEventListener('input', recomputeBo));
 
@@ -264,14 +293,15 @@ function initProduction() {
     const z = parseNum($('#bg-z'));
     const tF = parseNum($('#bg-temp'));
     const p = parseNum($('#bg-press'));
-    if ([z, tF, p].some(Number.isNaN) || p <= 0) { $('#bg-result').textContent = ''; return; }
+    const out = $('#bg-result');
+    if ([z, tF, p].some(Number.isNaN) || p <= 0) { out.textContent = ''; return; }
     const bg = gasFvf(z, fahrenheitToRankine(tF), p);
-    $('#bg-result').textContent = `Bg = ${fmt(bg)} rcf/scf  (${fmt(bg * 1000)} rcf/Mscf)`;
+    out.textContent = `${fmt(bg)} rcf/scf  (${fmt(bg * 1000)} rcf/Mscf)`;
   }
   ['#bg-z', '#bg-temp', '#bg-press'].forEach(s => $(s).addEventListener('input', recomputeBg));
 }
 
-// ---------- Gas ----------
+// ─── Gas ───────────────────────────────────────────────────────────────
 
 function initGas() {
   const fromV = $('#gv-from-value');
@@ -308,15 +338,12 @@ function initGas() {
     const sg = parseNum($('#zf-sg'));
     const tF = parseNum($('#zf-temp'));
     const p = parseNum($('#zf-press'));
-    if ([sg, tF, p].some(Number.isNaN) || sg <= 0 || p <= 0) {
-      $('#zf-result').textContent = '';
-      return;
-    }
+    const out = $('#zf-result');
+    if ([sg, tF, p].some(Number.isNaN) || sg <= 0 || p <= 0) { out.textContent = ''; return; }
     const tR = fahrenheitToRankine(tF);
     const { tpc, ppc } = pseudoCriticals(sg);
     const z = zFromConditions(sg, tR, p);
-    $('#zf-result').textContent =
-      `Z = ${fmt(z)}   (Tpr = ${fmt(tR/tpc)}, Ppr = ${fmt(p/ppc)})`;
+    out.textContent = `${fmt(z)}   (Tpr ${fmt(tR/tpc)} · Ppr ${fmt(p/ppc)})`;
   }
   ['#zf-sg', '#zf-temp', '#zf-press'].forEach(s => $(s).addEventListener('input', recomputeZ));
 
@@ -324,20 +351,17 @@ function initGas() {
     const sg = parseNum($('#gd-sg'));
     const tF = parseNum($('#gd-temp'));
     const p = parseNum($('#gd-press'));
-    if ([sg, tF, p].some(Number.isNaN) || sg <= 0 || p <= 0) {
-      $('#gd-result').textContent = '';
-      return;
-    }
+    const out = $('#gd-result');
+    if ([sg, tF, p].some(Number.isNaN) || sg <= 0 || p <= 0) { out.textContent = ''; return; }
     const tR = fahrenheitToRankine(tF);
     const z = zFromConditions(sg, tR, p);
     const rho = gasDensityLbFt3(p, sg, z, tR);
-    $('#gd-result').textContent =
-      `ρ = ${fmt(rho)} lb/ft³   (Z = ${fmt(z)})`;
+    out.textContent = `${fmt(rho)} lb/ft³  (Z ${fmt(z)})`;
   }
   ['#gd-sg', '#gd-temp', '#gd-press'].forEach(s => $(s).addEventListener('input', recomputeRho));
 }
 
-// ---------- Settings ----------
+// ─── Settings ──────────────────────────────────────────────────────────
 
 function initSettings() {
   const prefs = getPrefs();
@@ -349,6 +373,7 @@ function initSettings() {
   });
   $('#pref-sigfigs').addEventListener('change', e => {
     setPrefs({ sigFigs: parseInt(e.target.value, 10) });
+    // Refresh visible values by re-firing input events on every numeric field.
     $$('input[type="number"]').forEach(i => i.dispatchEvent(new Event('input', { bubbles: true })));
   });
   $('#pref-reset').addEventListener('click', () => {
@@ -358,12 +383,10 @@ function initSettings() {
   });
 }
 
-// ---------- Boot ----------
+// ─── Boot ──────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
-  initTabs();
-  initReveal();
-  initScrollProgress();
+  initChrome();
   initUnitConverter();
   initDrilling();
   initProduction();

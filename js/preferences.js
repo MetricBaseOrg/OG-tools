@@ -9,6 +9,12 @@ const DEFAULTS = {
 
 let cache = null;
 
+function clampSigFigs(v) {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return DEFAULTS.sigFigs;
+  return Math.min(6, Math.max(2, Math.round(n)));
+}
+
 function read() {
   if (cache) return cache;
   try {
@@ -17,6 +23,8 @@ function read() {
   } catch {
     cache = { ...DEFAULTS };
   }
+  cache.sigFigs = clampSigFigs(cache.sigFigs);
+  cache.unitSystem = cache.unitSystem === 'si' ? 'si' : 'field';
   return cache;
 }
 
@@ -26,6 +34,12 @@ export function getPrefs() {
 
 export function setPrefs(patch) {
   const next = { ...read(), ...patch };
+  if (Object.prototype.hasOwnProperty.call(patch, 'sigFigs')) {
+    next.sigFigs = clampSigFigs(patch.sigFigs);
+  }
+  if (Object.prototype.hasOwnProperty.call(patch, 'unitSystem')) {
+    next.unitSystem = patch.unitSystem === 'si' ? 'si' : 'field';
+  }
   cache = next;
   try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* quota / private mode */ }
   return { ...next };

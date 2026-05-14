@@ -88,6 +88,7 @@ function initChrome() {
   const overlay = $('#mb-drawer-overlay');
   const burger = $('#mb-hamburger-btn');
   const closeBtn = $('.mb-drawer-close');
+  const drawerReady = drawer && overlay && burger && closeBtn;
 
   function openDrawer() {
     drawer.classList.add('open');
@@ -103,13 +104,15 @@ function initChrome() {
     burger.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
   }
-  burger.addEventListener('click', () => {
-    drawer.classList.contains('open') ? closeDrawer() : openDrawer();
-  });
-  overlay.addEventListener('click', closeDrawer);
-  closeBtn.addEventListener('click', closeDrawer);
-  // Close drawer when an in-page anchor is followed.
-  $$('#mb-drawer a[href^="#"]').forEach(a => a.addEventListener('click', closeDrawer));
+  if (drawerReady) {
+    burger.addEventListener('click', () => {
+      drawer.classList.contains('open') ? closeDrawer() : openDrawer();
+    });
+    overlay.addEventListener('click', closeDrawer);
+    closeBtn.addEventListener('click', closeDrawer);
+    // Close drawer when an in-page anchor is followed.
+    $$('#mb-drawer a[href^="#"]').forEach(a => a.addEventListener('click', closeDrawer));
+  }
 
   // Scroll progress + back-to-top
   const progress = $('#mb-progress');
@@ -415,22 +418,28 @@ function initGas() {
 // ─── Settings ──────────────────────────────────────────────────────────
 
 function initSettings() {
-  const prefs = getPrefs();
-  $('#pref-system').value = prefs.unitSystem;
-  $('#pref-sigfigs').value = String(prefs.sigFigs);
+  const systemEl = $('#pref-system');
+  const sigEl = $('#pref-sigfigs');
+  const resetEl = $('#pref-reset');
+  if (!systemEl || !sigEl || !resetEl) return;
 
-  $('#pref-system').addEventListener('change', e => {
+  const prefs = getPrefs();
+  systemEl.value = prefs.unitSystem;
+  sigEl.value = String(prefs.sigFigs);
+
+  systemEl.addEventListener('change', e => {
     setPrefs({ unitSystem: e.target.value });
   });
-  $('#pref-sigfigs').addEventListener('change', e => {
+  sigEl.addEventListener('change', e => {
     setPrefs({ sigFigs: parseInt(e.target.value, 10) });
+    sigEl.value = String(getPrefs().sigFigs);
     // Refresh visible values by re-firing input events on every numeric field.
     $$('input[type="text"]').forEach(i => i.dispatchEvent(new Event('input', { bubbles: true })));
   });
-  $('#pref-reset').addEventListener('click', () => {
+  resetEl.addEventListener('click', () => {
     const p = resetPrefs();
-    $('#pref-system').value = p.unitSystem;
-    $('#pref-sigfigs').value = String(p.sigFigs);
+    systemEl.value = p.unitSystem;
+    sigEl.value = String(p.sigFigs);
   });
 }
 

@@ -49,7 +49,7 @@ function activateTab(id, opts = {}) {
     // Defer so any drawer-close handler runs first (it clears body.overflow:hidden).
     requestAnimationFrame(() => {
       const tabs = $('#mb-tabs');
-      const navH = $('#mb-nav')?.offsetHeight ?? 58;
+      const navH = $('#mb-nav')?.offsetHeight ?? 48;
       if (!tabs) return;
       const target = tabs.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({ top: target - navH + 1, behavior: 'smooth' });
@@ -114,15 +114,26 @@ function initChrome() {
     $$('#mb-drawer a[href^="#"]').forEach(a => a.addEventListener('click', closeDrawer));
   }
 
-  // Scroll progress + back-to-top
+  // Scroll progress + back-to-top + sticky nav shrink
+  const nav      = $('#mb-nav');
   const progress = $('#mb-progress');
-  const backTop = $('#mb-back-top');
+  const backTop  = $('#mb-back-top');
+  const root     = document.documentElement;
+
+  function applyNavShrink(isScrolled) {
+    if (!nav) return;
+    const was = nav.classList.contains('scrolled');
+    if (was === isScrolled) return;
+    nav.classList.toggle('scrolled', isScrolled);
+    root.style.setProperty('--nav-h', isScrolled ? '48px' : '58px');
+  }
+
   const onScroll = () => {
-    const doc = document.documentElement;
-    const scrolled = doc.scrollTop || document.body.scrollTop;
-    const total = doc.scrollHeight - doc.clientHeight;
+    const scrolled = root.scrollTop || document.body.scrollTop;
+    const total = root.scrollHeight - root.clientHeight;
     if (progress) progress.style.width = (total > 0 ? (scrolled / total) * 100 : 0) + '%';
     if (backTop) backTop.classList.toggle('visible', scrolled > 400);
+    applyNavShrink(scrolled > 20);
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
